@@ -1,3 +1,0 @@
-# Veri-Charm-Authentication-Protocol-
-Demo code for the Veri Charm authentication process using logic embedded tokens to verify originality of products in purchase. The interface is for simulation of the user/buyer experience in using a trustless verification system enabled with the Charms meta-protocol.
-Demo code for the Veri Charm authentication process using logic embedded tokens to verify originality of products in purchase. The interface is for simulation of the user/buyer experience in using a trustless verification system powered by the Charms meta-protocol, through creation of authentication token assets able to transfer and control themselves with predefined logic.
