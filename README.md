@@ -1,1 +1,0 @@
-# Veri-Charm-Authentication-Protocol-
