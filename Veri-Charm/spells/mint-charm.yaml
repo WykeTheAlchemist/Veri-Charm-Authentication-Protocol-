@@ -1,0 +1,107 @@
+# Charm Token Minting Spell
+# Template for minting new Charm tokens
+
+name: "mint-vericharm-token"
+description: "Mint a new Veri-Charm token for a physical product"
+version: "1.0.0"
+author: "Bit-Earth Labs"
+
+metadata:
+  category: "token-minting"
+  chain: "bitcoin-testnet"
+  estimatedFee: "0.0001 BTC"
+
+inputs:
+  - name: "manufacturerAddress"
+    type: "address"
+    description: "Manufacturer's wallet address"
+    required: true
+    
+  - name: "productName"
+    type: "string"
+    description: "Name of the physical product"
+    required: true
+    
+  - name: "productCategory"
+    type: "string"
+    description: "Category (luxury, pharmaceutical, organic, renewable)"
+    required: true
+    
+  - name: "serialNumber"
+    type: "string"
+    description: "Product serial number"
+    required: true
+    
+  - name: "batchId"
+    type: "string"
+    description: "Manufacturing batch ID"
+    required: true
+    
+  - name: "warrantyDays"
+    type: "integer"
+    description: "Warranty period in days"
+    default: 14
+
+outputs:
+  - name: "charmTokenId"
+    type: "string"
+    description: "Generated Charm token ID"
+    
+  - name: "mintTransaction"
+    type: "txhash"
+    description: "Mint transaction hash"
+
+operations:
+  - type: "contract-call"
+    contract: "vericharm.contract"
+    method: "mint_charm"
+    params:
+      product_data:
+        name: "{{productName}}"
+        category: "{{productCategory}}"
+        serial_number: "{{serialNumber}}"
+        batch_id: "{{batchId}}"
+      metadata:
+        warranty_days: "{{warrantyDays}}"
+        mint_timestamp: "{{timestamp}}"
+    payment:
+      amount: "0.001"
+      asset: "BTC"
+      
+  - type: "event-emit"
+    event: "CharmMinted"
+    data:
+      token_id: "{{outputs.charmTokenId}}"
+      manufacturer: "{{manufacturerAddress}}"
+      product_name: "{{productName}}"
+      
+  - type: "storage-update"
+    key: "tokens/{{outputs.charmTokenId}}"
+    value:
+      status: "minted"
+      transaction: "{{outputs.mintTransaction}}"
+
+validation:
+  - condition: "{{manufacturerAddress}} in registered_manufacturers"
+    error: "Address not in registered manufacturers list"
+    
+  - condition: "{{warrantyDays}} <= 365"
+    error: "Warranty period cannot exceed 365 days"
+
+hooks:
+  pre-execution:
+    - script: "scripts/verify-manufacturer.js"
+      
+  post-execution:
+    - script: "scripts/update-inventory.js"
+    - script: "scripts/notify-retailers.js"
+
+# Example usage
+example: |
+  charms cast mint-charm.yaml \
+    --manufacturerAddress "addr1qxyz..." \
+    --productName "Éclat de Lune Perfume" \
+    --productCategory "luxury" \
+    --serialNumber "LUX2024-001" \
+    --batchId "BATCH-LUX-0424" \
+    --warrantyDays 30
