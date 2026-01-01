@@ -1,7 +1,5 @@
 /**
  * VeriCharm - Anti-Counterfeiting Platform
- * Main application JavaScript file
- * Handles all interactive functionality
  */
 
 // App State Management
